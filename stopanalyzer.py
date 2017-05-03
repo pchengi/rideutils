@@ -16,6 +16,15 @@ aparser.add_argument('-g', type=str,default='none', help='time in minutes, for f
 aparser.add_argument('--utc-offset', '-u', type=str,default='none', help='offset in hours, from UTC')
 args=aparser.parse_args()
 
+def td(totalsecs):
+	secs=totalsecs%60
+	totalmins=(totalsecs/60)
+	mins=totalmins%60
+	totalhrs=totalmins/60
+	hrs=totalhrs%24
+	days=totalhrs/24
+	return(days,hrs,mins,secs)
+	
 if args.f == 'none':
 	print 'No input file provided'
 	sys.exit(-1)
@@ -40,6 +49,7 @@ compobj=OrderedDict()
 offsetdelta=datetime.timedelta(0,utcoffset*3600)
 pointlist=list()
 nottrk=1
+firsttstamp=1
 for line in lines:
 	if nottrk:
 		#if line.find('trkpt') == -1 and line.find('Trackpoint') == -1:
@@ -56,8 +66,11 @@ for line in lines:
 		mat=timereg.match(line)
 		tstxt=mat.group(1)
 		timestamp=datetime.datetime.strptime(tstxt,"%Y-%m-%dT%H:%M:%SZ")+offsetdelta
-		#tstr=datetime.datetime.strftime(timestamp,"%b %d %Y %H:%M:%S")
+		if firsttstamp == 1:
+			starttime=timestamp
+			firsttstamp=0
 		pt['time']=timestamp
+		pt['ridetime']=timestamp-starttime
 		continue
 	if line.find('<speed>') != -1:
 		mat=speedreg.match(line)
@@ -81,7 +94,9 @@ for point in pointlist:
 			pausesecs=0
 			pauseitem['latlng']=point['latlng']
 			tstr=datetime.datetime.strftime(point['time'],"%b %d %Y %H:%M:%S")
+			ridetimevals=td(point['ridetime'].seconds)
 			pauseitem['pausestart']=tstr
+			pauseitem['ridetimevals']=ridetimevals
 			prevpt=point
 			continue
 		
@@ -102,6 +117,6 @@ for pause in pauselist:
 	if minpause != -1:
 		if minpause > (pause['pausedtime']/60.0):
 			continue
-	print "%s %.2f %s"%(pause['latlng'],pause['pausedtime']/60.0,pause['pausestart'])
+	print "%s %.2f %s %s:%s:%s:%s"%(pause['latlng'],pause['pausedtime']/60.0,pause['pausestart'],pause['ridetimevals'][0],pause['ridetimevals'][1],pause['ridetimevals'][2],pause['ridetimevals'][3])
 
 print "Cumulative stoppage time in minutes: %0.2f"%(totalpause/60.0)
