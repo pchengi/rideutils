@@ -2,7 +2,7 @@
 
 #
 __author__ = 'Prashanth Dwarakanath'
-__license__ = 'GPL'
+__license__ = 'GPLv3'
 
 import argparse,sys,math
 import datetime
