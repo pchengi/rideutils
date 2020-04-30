@@ -22,3 +22,37 @@ pchengi@thebeast:~$ python stopanalyzer.py -f test.gpx -g 5 -u 2
 (56.723954825, 13.866336147) 7.55 Apr 06 2017 03:09:54 0:11:28:33
 (56.772399376, 13.900122677) 6.42 Apr 06 2017 03:40:29 0:11:59:8
 Cumulative stoppage time in minutes: 208.88
+
+elevprofiler is a script that allows you to plot the elevation profile of a complete tcx track, or parts of it.
+python3 elevprofiler.py -h
+usage: elevprofiler.py [-h] [-f F] [-s S] [-e E] [-t T] [-m [M]] [-n [N]]
+                       [-c [C] | -a [A]]
+
+optional arguments:
+  -h, --help  show this help message and exit
+  -f F        input file
+  -s S        starting point
+  -e E        ending point
+  -t T        title for graph
+  -m [M]      specify values in miles instead of meters (output will still be
+              in km)
+  -n [N]      no graph display, just output elevation information and write
+              output.pdf)
+  -c [C]      not currently implemented
+  -a [A]      additional filters
+
+ex:
+python3 elevprofiler.py -f Sacolabra.tcx -t 'Sa Colabra' -n
+Total points: 2643
+Total climb: 3681.00 m
+Total descent: 3684 m
+Total distance: 116209.41 m 
+Net alt gain: 5.0
+
+python3 elevprofiler.py -f Sacolabra.tcx -t 'Sa Colabra' -a -s 10000 -e 80000 -n
+Total points: 2643
+will eject 886 points
+Total climb: 3209.00 m
+Total descent: 2584 m
+Total distance: 69842.41 m
+Net alt gain: 625.0 
