@@ -1,4 +1,7 @@
 #!/usr/bin/env python2
+#
+__author__ = 'Prashanth Dwarakanath'
+__license__ = 'GPLv3'
 
 import argparse,sys,math
 import datetime

@@ -14,7 +14,7 @@ Usage:
 -u: UTC offset. The timestamps are in UTC. If your timezone differs, simply provide the offset value.
 
 ex:
-pchengi@thebeast:~$ python stopanalyzer.py -f test.gpx -g 5 -u 2
+pchengi@thebeast:~$ python3 stopanalyzer.py -f test.gpx -g 5 -u 2
 (56.033813057, 12.616022487) 26.42 Apr 05 2017 17:39:33 0:1:58:12
 (56.182073167, 13.029872334) 8.03 Apr 05 2017 19:39:58 0:3:58:37
 (56.187120916, 13.057203625) 12.28 Apr 05 2017 19:54:05 0:4:12:44
