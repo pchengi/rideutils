@@ -65,3 +65,4 @@ Total descent: 2584 m
 Total distance: 69842.41 m
 Net alt gain: 625.0 
 ````
+![](ElevProfiler.png)
