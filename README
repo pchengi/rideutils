@@ -1,7 +1,11 @@
+# Stopanalyser
+
 stopanalyser is a tool to parse ride GPS data in gpx format, to report stops.
 I wrote it to be able to better analyse my stopping behavior, on long rides.
 The lat-long info in the output is useful to lookup the location, to better recollect details.
 I use a Garmin Edge 500, and I convert the fit files to gpx, using gps-babel, with a command line like this:
+
+````
 gpsbabel -i garmin_fit -f input.fit -o gpx -F output.gpx
 
 Usage:
@@ -22,8 +26,12 @@ pchengi@thebeast:~$ python stopanalyzer.py -f test.gpx -g 5 -u 2
 (56.723954825, 13.866336147) 7.55 Apr 06 2017 03:09:54 0:11:28:33
 (56.772399376, 13.900122677) 6.42 Apr 06 2017 03:40:29 0:11:59:8
 Cumulative stoppage time in minutes: 208.88
+````
+# Elevprofiler
 
 elevprofiler is a script that allows you to plot the elevation profile of a complete tcx track, or parts of it.
+
+````
 python3 elevprofiler.py -h
 usage: elevprofiler.py [-h] [-f F] [-s S] [-e E] [-t T] [-m [M]] [-n [N]]
                        [-c [C] | -a [A]]
@@ -56,3 +64,4 @@ Total climb: 3209.00 m
 Total descent: 2584 m
 Total distance: 69842.41 m
 Net alt gain: 625.0 
+````
