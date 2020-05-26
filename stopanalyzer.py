@@ -33,9 +33,8 @@ if args.g != 'none':
     minpause=float(args.g)
 else:
     minpause=-1
-fp=open(args.f,'r')
-lines=fp.readlines()
-fp.close()
+with open(args.f,'r') as inp:
+    lines=inp.readlines()
 
 if args.utc_offset != 'none':
     utcoffset=int(args.utc_offset)
@@ -49,6 +48,7 @@ offsetdelta=datetime.timedelta(0,utcoffset*3600)
 pointlist=list()
 nottrk=1
 firsttstamp=1
+foundspeed=False
 for line in lines:
     if nottrk:
         #if line.find('trkpt') == -1 and line.find('Trackpoint') == -1:
@@ -64,7 +64,14 @@ for line in lines:
     if line.find('time') != -1:
         mat=timereg.match(line)
         tstxt=mat.group(1)
-        timestamp=datetime.datetime.strptime(tstxt,"%Y-%m-%dT%H:%M:%SZ")+offsetdelta
+        try:
+            timestamp=datetime.datetime.strptime(tstxt,"%Y-%m-%dT%H:%M:%SZ")+offsetdelta
+        except ValueError:
+            try:
+                timestamp=datetime.datetime.strptime(tstxt,"%Y-%m-%dT%H:%M:%S.000Z")+offsetdelta
+            except:
+                print("Secondary exception")
+                sys.exit(-1)
         if firsttstamp == 1:
             starttime=timestamp
             firsttstamp=0
@@ -74,13 +81,16 @@ for line in lines:
     if line.find('<speed>') != -1:
         mat=speedreg.match(line)
         pt['speed']=mat.group(1)
+        foundspeed=True
         continue
 
     if line.find('/trkpt') != -1 or line.find('/Trackpoint') != -1:
         pointlist.append(pt)
         nottrk=1
         continue
-
+if foundspeed == False:
+    print("No speed information was found in the input file.")
+    sys.exit(-1)
 firstpoint=1
 pauselist=list()
 pausestart=0
@@ -92,7 +102,14 @@ for point in pointlist:
             pauseitem=dict()
             pausesecs=0
             pauseitem['latlng']=point['latlng']
-            tstr=datetime.datetime.strftime(point['time'],"%b %d %Y %H:%M:%S")
+            try:
+                tstr=datetime.datetime.strftime(point['time'],"%b %d %Y %H:%M:%S")
+            except ValueError:
+                try:
+                    tstr=datetime.datetime.strftime(point['time'],"%b %d %Y %H:%M:%S.000Z")
+                except:
+                    print("Secondary exception")
+                    sys.exit(-1)
             ridetimevals=td(point['ridetime'].seconds)
             pauseitem['pausestart']=tstr
             pauseitem['ridetimevals']=ridetimevals
@@ -111,11 +128,14 @@ for point in pointlist:
         
 totalpause=0
 #print "Latlong\tTime Elapsed\t Pause start time"
+ct=1
 for pause in pauselist:
     totalpause+=pause['pausedtime']
     if minpause != -1:
         if minpause > (pause['pausedtime']/60.0):
+            ct+=1
             continue
-    print("%s %.2f %s %d:%d:%d:%d"%(pause['latlng'],pause['pausedtime']/60.0,pause['pausestart'],int(pause['ridetimevals'][0]),int(pause['ridetimevals'][1]),int(pause['ridetimevals'][2]),int(pause['ridetimevals'][3])))
+    print("%d. %s %.2f %s %d:%d:%d:%d"%(ct,pause['latlng'],pause['pausedtime']/60.0,pause['pausestart'],int(pause['ridetimevals'][0]),int(pause['ridetimevals'][1]),int(pause['ridetimevals'][2]),int(pause['ridetimevals'][3])))
+    ct+=1
 
 print("Cumulative stoppage time in minutes: %0.2f"%(totalpause/60.0))
